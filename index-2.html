@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#020617" />
+
+  <title>CoinImpulse – Crypto Price Deviation Alerts | Android App</title>
+  <meta name="description" content="CoinImpulse tracks crypto price deviations by percentage from your custom entry. Smart background alerts for Bitcoin, Ethereum and 1000+ coins. PRO: unlimited alerts, 1-min sync. Free to download." />
+  <meta name="keywords" content="crypto price deviation tracker, background crypto alerts, bitcoin percentage alert android, ethereum deviation monitor, coinimpulse pro, custom crypto notifications" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://coinimpulse.app/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="CoinImpulse" />
+  <meta property="og:title" content="CoinImpulse – Track Crypto Deviations, Not Market Noise" />
+  <meta property="og:description" content="Set a percentage threshold on any crypto and get alerted the moment it deviates. Smart background tracking. Unlimited alerts with PRO." />
+  <meta property="og:image" content="https://play-lh.googleusercontent.com/VgUbSzxBPOOzMk-sO9QFgWQJYo_kJyofFzDmH2WuvGfBojkI92OtBT6E0dGOkSKWYPEbYwoMK211WKwBSzDWeZc=w1200-h630-rw" />
+  <meta property="og:url" content="https://coinimpulse.app/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="CoinImpulse – Crypto Price Deviation Alerts" />
+  <meta name="twitter:description" content="Background crypto alerts based on percentage moves, not fixed prices. Free on Android." />
+  <meta name="twitter:image" content="https://play-lh.googleusercontent.com/VgUbSzxBPOOzMk-sO9QFgWQJYo_kJyofFzDmH2WuvGfBojkI92OtBT6E0dGOkSKWYPEbYwoMK211WKwBSzDWeZc=w1200-h630-rw" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "CoinImpulse",
+    "operatingSystem": "ANDROID",
+    "applicationCategory": "FinanceApplication",
+    "description": "CoinImpulse is a crypto price deviation tracker for Android. Monitor Bitcoin, Ethereum and 1000+ cryptocurrencies with custom percentage alerts in the background.",
+    "offers": [
+      { "@type": "Offer", "price": "0", "priceCurrency": "USD", "name": "Free" },
+      { "@type": "Offer", "price": "0", "priceCurrency": "USD", "name": "PRO" }
+    ],
+    "downloadUrl": "https://play.google.com/store/apps/details?id=com.bk.coinimpulse",
+    "installUrl": "https://play.google.com/store/apps/details?id=com.bk.coinimpulse",
+    "screenshot": "https://play-lh.googleusercontent.com/VgUbSzxBPOOzMk-sO9QFgWQJYo_kJyofFzDmH2WuvGfBojkI92OtBT6E0dGOkSKWYPEbYwoMK211WKwBSzDWeZc=w526-h296-rw"
+  }
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          keyframes: {
+            marquee:  { '0%': { transform: 'translateX(0)' },      '100%': { transform: 'translateX(-50%)' } },
+            marquee2: { '0%': { transform: 'translateX(-50%)' },   '100%': { transform: 'translateX(0)' } },
+            float:    { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-14px)' } },
+            shimmer:  { '0%': { backgroundPosition: '-200% center' }, '100%': { backgroundPosition: '200% center' } },
+            'fade-up':{ '0%': { opacity:'0', transform:'translateY(24px)' }, '100%': { opacity:'1', transform:'translateY(0)' } },
+            'glow-pulse': { '0%,100%': { opacity: '0.6' }, '50%': { opacity: '1' } },
+          },
+          animation: {
+            marquee:    'marquee 28s linear infinite',
+            marquee2:   'marquee2 28s linear infinite',
+            'marquee-slow': 'marquee 38s linear infinite',
+            float:      'float 7s ease-in-out infinite',
+            'float-d':  'float 7s ease-in-out 2.5s infinite',
+            shimmer:    'shimmer 3s linear infinite',
+            'fade-up':  'fade-up 0.7s ease both',
+            'glow-pulse': 'glow-pulse 3s ease-in-out infinite',
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --purple: #a855f7;
+      --cyan:   #22d3ee;
+      --bg:     #020617;
+    }
+    * { box-sizing: border-box; }
+    body { background: var(--bg); color: #e2e8f0; font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+
+    /* ---- Gradient text ---- */
+    .gt { background: linear-gradient(135deg, var(--purple) 0%, var(--cyan) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .gt-gold { background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #f97316 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    /* ---- Shimmer text ---- */
+    .shimmer-text {
+      background: linear-gradient(90deg, var(--purple), var(--cyan), var(--purple));
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: shimmer 3s linear infinite;
+    }
+
+    /* ---- Glass card ---- */
+    .glass {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .glass-purple {
+      background: linear-gradient(145deg, rgba(168,85,247,0.08) 0%, rgba(34,211,238,0.04) 100%);
+      border: 1px solid rgba(168,85,247,0.2);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: border-color .3s, transform .3s, box-shadow .3s;
+    }
+    .glass-purple:hover { border-color: rgba(168,85,247,0.45); transform: translateY(-5px); box-shadow: 0 20px 60px rgba(168,85,247,0.14); }
+
+    /* ---- Gradient button ---- */
+    .btn-primary {
+      background: linear-gradient(135deg, #7c3aed 0%, #0891b2 100%);
+      box-shadow: 0 0 0 0 rgba(124,58,237,0);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 40px rgba(124,58,237,0.5); }
+    .btn-primary:active { transform: scale(0.98); }
+
+    /* ---- Screenshot frame ---- */
+    .screen-frame {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(168,85,247,0.3);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .screen-frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+    /* ---- Phone frame ---- */
+    .phone-frame {
+      border-radius: 28px;
+      overflow: hidden;
+      border: 2px solid rgba(168,85,247,0.4);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.8), 0 30px 80px rgba(0,0,0,0.7), 0 0 60px rgba(124,58,237,0.15);
+      background: #0a0a1a;
+    }
+
+    /* ---- Noise overlay ---- */
+    .noise {
+      background-image:
+        radial-gradient(ellipse 90% 60% at 50% -5%, rgba(124,58,237,0.14) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 90% 90%, rgba(8,145,178,0.08) 0%, transparent 60%);
+    }
+
+    /* ---- Marquee container ---- */
+    .marquee-track { display: flex; width: max-content; gap: 16px; }
+    .marquee-wrap { overflow: hidden; mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%); }
+
+    /* ---- Grid line bg ---- */
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(168,85,247,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(168,85,247,0.06) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    /* ---- Pro badge ---- */
+    .pro-badge {
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      box-shadow: 0 0 20px rgba(245,158,11,0.4);
+    }
+
+    /* ---- Scroll reveal ---- */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ---- Glow dot ---- */
+    .dot-glow {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan), 0 0 16px var(--cyan);
+      animation: glow-pulse 2s ease-in-out infinite;
+    }
+
+    /* ---- Border gradient ---- */
+    .border-gradient {
+      position: relative;
+      border-radius: 20px;
+    }
+    .border-gradient::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 21px;
+      background: linear-gradient(135deg, rgba(168,85,247,0.6), rgba(34,211,238,0.3), rgba(168,85,247,0.1));
+      z-index: -1;
+    }
+
+    /* ---- Mobile tweaks ---- */
+    @media (max-width: 639px) {
+      .phone-frame { max-width: 180px; }
+      h1 { font-size: 2.4rem !important; line-height: 1.1 !important; }
+    }
+
+    /* ---- Scrollbar ---- */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0a1a; }
+    ::-webkit-scrollbar-thumb { background: rgba(168,85,247,0.3); border-radius: 3px; }
+  </style>
+</head>
+
+<body>
+
+<!-- ======================================================
+     HEADER
+====================================================== -->
+<header class="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.06] backdrop-blur-2xl"
+        style="background:rgba(2,6,23,0.85)">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+
+    <a href="#" class="flex items-center gap-2.5" aria-label="CoinImpulse home">
+      <svg width="32" height="32" viewBox="0 0 108 108" class="rounded-xl flex-shrink-0" aria-hidden="true">
+        <defs>
+          <radialGradient id="ibg" cx="40" cy="38" r="78" gradientUnits="userSpaceOnUse">
+            <stop offset="0%"  stop-color="#3D3A4D"/>
+            <stop offset="55%" stop-color="#1B1D24"/>
+            <stop offset="100%" stop-color="#101114"/>
+          </radialGradient>
+        </defs>
+        <rect width="108" height="108" fill="url(#ibg)" rx="24"/>
+        <circle cx="54" cy="54" r="32" fill="none" stroke="#B9C4FF" stroke-width="4"/>
+        <polyline points="28,54 36,54 42,30 48,72 54,46 60,54 66,40 78,54"
+                  fill="none" stroke="#B9C4FF" stroke-width="5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="text-sm font-bold gt tracking-tight">CoinImpulse</span>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-6 text-sm text-slate-400" aria-label="Main navigation">
+      <a href="#features" class="hover:text-white transition-colors">Features</a>
+      <a href="#pro" class="hover:text-white transition-colors">PRO</a>
+    </nav>
+
+    <a href="https://play.google.com/store/apps/details?id=com.bk.coinimpulse"
+       target="_blank" rel="noopener noreferrer"
+       class="btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white"
+       aria-label="Get CoinImpulse on Google Play">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M3.18 23.76a2 2 0 0 1-.68-1.54V1.78A2 2 0 0 1 3.18.24L14.37 12 3.18 23.76z"/>
+        <path d="M18.08 16.08 5.53 23.3l8.84-8.84 3.71 1.62z"/>
+        <path d="M21.1 13.6a1.83 1.83 0 0 1 0 2.8l-3.02 1.68-4.12-4.08 4.12-4.08 3.02 1.68z"/>
+        <path d="M5.53.7l12.55 7.22-3.71 1.62L5.53.7z"/>
+      </svg>
+      <span class="hidden sm:inline">Download Free</span>
+      <span class="sm:hidden">Get App</span>
+    </a>
+  </div>
+</header>
+
+<main>
+
+<!-- ======================================================
+     HERO
+====================================================== -->
+<section class="relative noise pt-28 pb-8 sm:pt-36 sm:pb-12 overflow-hidden"
+         aria-labelledby="hero-heading">
+
+  <!-- Grid bg -->
+  <div class="absolute inset-0 grid-bg opacity-40 pointer-events-none" aria-hidden="true"></div>
+
+  <!-- Blobs -->
+  <div class="absolute -top-40 left-1/2 -translate-x-1/3 w-[700px] h-[700px] rounded-full
+              bg-purple-900/20 blur-[120px] pointer-events-none" aria-hidden="true"></div>
+  <div class="absolute top-1/2 -right-40 w-96 h-96 rounded-full
+              bg-cyan-900/15 blur-[100px] pointer-events-none" aria-hidden="true"></div>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 relative">
+    <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+
+      <!-- Left: text -->
+      <div class="flex-1 text-center lg:text-left">
+
+        <!-- Badge -->
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass mb-6
+                    border border-purple-500/25 text-purple-300 text-xs font-semibold tracking-widest uppercase">
+          <span class="dot-glow" aria-hidden="true"></span>
+          Live on Google Play
+        </div>
+
+        <h1 id="hero-heading"
+            class="text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight mb-6">
+          <span class="shimmer-text">Track Crypto</span><br />
+          <span class="text-white">Deviations,</span><br />
+          <span class="text-slate-400 font-light italic">Not Market Noise.</span>
+        </h1>
+
+        <p class="text-slate-400 text-lg sm:text-xl leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
+          Set a price entry point, pick your deviation threshold — and
+          put your phone down. CoinImpulse alerts you the instant
+          <strong class="text-slate-200">Bitcoin, Ethereum</strong> or any of
+          <strong class="text-slate-200">1000+ coins</strong> moves by your
+          exact percentage. No battery drain. No spam.
+        </p>
+
+        <!-- CTAs -->
+        <div class="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 mb-10">
+          <a href="https://play.google.com/store/apps/details?id=com.bk.coinimpulse"
+             target="_blank" rel="noopener noreferrer"
+             class="btn-primary inline-flex items-center gap-3 px-7 py-4 rounded-2xl text-white font-bold text-lg w-full sm:w-auto justify-center"
+             aria-label="Download CoinImpulse on Google Play">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M3.18 23.76a2 2 0 0 1-.68-1.54V1.78A2 2 0 0 1 3.18.24L14.37 12 3.18 23.76z"/>
+              <path d="M18.08 16.08 5.53 23.3l8.84-8.84 3.71 1.62z"/>
+              <path d="M21.1 13.6a1.83 1.83 0 0 1 0 2.8l-3.02 1.68-4.12-4.08 4.12-4.08 3.02 1.68z"/>
+              <path d="M5.53.7l12.55 7.22-3.71 1.62L5.53.7z"/>
+            </svg>
+            Get it on Google Play
+          </a>
+
+        </div>
+
+        <!-- Trust pills -->
+        <div class="flex flex-wrap justify-center lg:justify-start gap-2 text-xs">
+          <span class="glass px-3 py-1.5 rounded-full text-slate-400 border border-white/05">Free to download</span>
+          <span class="glass px-3 py-1.5 rounded-full text-slate-400 border border-white/05">PRO available</span>
+          <span class="glass px-3 py-1.5 rounded-full text-slate-400 border border-white/05">Android 8.0+</span>
+          <span class="glass px-3 py-1.5 rounded-full text-slate-400 border border-white/05">1000+ coins</span>
+          <span class="glass px-3 py-1.5 rounded-full text-slate-400 border border-white/05">Binance data</span>
+        </div>
+      </div>
+
+      <!-- Right: hero screenshot stack -->
+      <div class="relative flex-shrink-0 flex items-end justify-center gap-3 sm:gap-4 w-full lg:w-auto"
+           aria-label="CoinImpulse app preview">
+
+        <!-- Glow under phones -->
+        <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 w-72 h-20 rounded-full
+                    bg-purple-600/25 blur-2xl pointer-events-none" aria-hidden="true"></div>
+
+        <!-- Phone 1 (back, tilted) -->
+        <div class="animate-float-d relative hidden sm:block"
+             style="transform: rotate(-6deg) translateY(16px); z-index:1;">
+          <div class="phone-frame w-44" style="aspect-ratio:9/19.5;">
+            <div class="w-full h-full overflow-hidden">
+              <img src="https://play-lh.googleusercontent.com/CGGXoRHtsxkbgzVWldNw1PEsckMbmPhfnyZf7MizihaPLX5wYiNSV6KqeUkWPvzlJN-A4bdvLiAvmdvhfrgOoCQ=w440-h960-rw"
+                   alt="CoinImpulse price alerts screen" loading="eager"
+                   class="w-full h-full object-cover" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Phone 2 (front, center) -->
+        <div class="animate-float relative z-10">
+          <div class="phone-frame w-48 sm:w-56 lg:w-64" style="aspect-ratio:9/19.5;">
+            <div class="w-full h-full overflow-hidden">
+              <img src="https://play-lh.googleusercontent.com/VgUbSzxBPOOzMk-sO9QFgWQJYo_kJyofFzDmH2WuvGfBojkI92OtBT6E0dGOkSKWYPEbYwoMK211WKwBSzDWeZc=w528-h1145-rw"
+                   alt="CoinImpulse main dashboard with crypto price deviations" loading="eager"
+                   class="w-full h-full object-cover" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Phone 3 (back right, tilted) -->
+        <div class="animate-float relative hidden sm:block"
+             style="transform: rotate(6deg) translateY(16px); z-index:1;">
+          <div class="phone-frame w-44" style="aspect-ratio:9/19.5;">
+            <div class="w-full h-full overflow-hidden">
+              <img src="https://play-lh.googleusercontent.com/KgbLjYaA_RftWB9a85Pan3IGwAlVRouYx-NW0cLXjUSgPSzleNP0ZCB7QIKndp7fEshFOWj-LFhm7yDgk2-nWQ=w440-h960-rw"
+                   alt="CoinImpulse alert history with filter" loading="eager"
+                   class="w-full h-full object-cover" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================
+     FEATURES
+====================================================== -->
+<section id="features" class="py-20 sm:py-28 relative" aria-labelledby="features-heading">
+
+  <!-- Divider glow -->
+  <div class="absolute top-0 left-0 right-0 h-px"
+       style="background:linear-gradient(90deg, transparent, rgba(168,85,247,0.5) 30%, rgba(34,211,238,0.4) 70%, transparent)"
+       aria-hidden="true"></div>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+
+    <header class="text-center mb-16 reveal">
+      <p class="text-xs font-bold tracking-[0.2em] uppercase text-purple-400 mb-3">Why CoinImpulse</p>
+      <h2 id="features-heading"
+          class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
+        Built Different.<br/><span class="gt">Stop looking at charts, start listening 🎧</span>
+      </h2>
+      <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+        Unlike bloated exchange apps, CoinImpulse does one thing perfectly —
+        notify you when price moves by <em>your</em> percentage.
+      </p>
+    </header>
+
+    <!-- Feature grid 3 cols -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-5">
+
+      <!-- F1: Dynamic % Alerts -->
+      <article class="glass-purple rounded-2xl p-7 flex flex-col gap-5 reveal" style="transition-delay:.05s">
+        <!-- Icon area with decorative glow blob -->
+        <div class="relative w-14 h-14 flex-shrink-0">
+          <div class="absolute inset-0 rounded-2xl blur-xl opacity-60"
+               style="background:linear-gradient(135deg,#7c3aed,#0891b2)" aria-hidden="true"></div>
+          <div class="relative w-14 h-14 rounded-2xl flex items-center justify-center btn-primary">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <polyline points="2,18 7,10 12,13 19,4" stroke="white" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="19" cy="4" r="2.5" fill="#fde68a"/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <h3 class="text-xl font-bold text-white">Dynamic % Alerts</h3>
+            <span class="text-[10px] font-black tracking-widest uppercase px-2 py-0.5 rounded-full
+                         bg-purple-500/20 border border-purple-500/40 text-purple-300">Unique</span>
+          </div>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Most trackers only support fixed prices. CoinImpulse lets you alert on
+            <strong class="text-slate-200">percentage moves</strong> from your entry —
+            "notify me when BTC moves ±2% from $64,000."
+          </p>
+        </div>
+        <!-- Decorative: price chart with threshold crossed -->
+        <div class="mt-auto pt-4 border-t border-white/05">
+          <svg viewBox="0 0 220 60" class="w-full h-14" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#a855f7" stop-opacity=".25"/>
+                <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="cg1b" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#22d3ee" stop-opacity=".2"/>
+                <stop offset="100%" stop-color="#22d3ee" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- price line: approaches threshold then crosses -->
+            <path d="M0,52 C20,48 30,46 45,42 C55,38 65,44 80,38 C90,34 100,30 115,26 C125,22 130,20 140,14"
+                  fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round"/>
+            <!-- area under price line -->
+            <path d="M0,52 C20,48 30,46 45,42 C55,38 65,44 80,38 C90,34 100,30 115,26 C125,22 130,20 140,14 L140,60 L0,60Z"
+                  fill="url(#cg1)"/>
+            <!-- threshold line (dashed) -->
+            <line x1="0" y1="20" x2="220" y2="20" stroke="#22d3ee" stroke-width="1.2"
+                  stroke-dasharray="5 3"/>
+            <!-- alert burst at crossing point -->
+            <circle cx="140" cy="14" r="5" fill="none" stroke="#fde68a" stroke-width="1.5"/>
+            <circle cx="140" cy="14" r="2.5" fill="#fde68a"/>
+            <!-- after alert: price line continues (lighter) -->
+            <path d="M140,14 C155,10 170,8 185,5 C195,3 208,4 220,2"
+                  fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+            <path d="M140,14 C155,10 170,8 185,5 C195,3 208,4 220,2 L220,60 L140,60Z"
+                  fill="url(#cg1b)"/>
+            <!-- labels -->
+            <text x="2" y="17" font-size="7.5" fill="#22d3ee" font-family="monospace" opacity=".9">+5% threshold</text>
+            <text x="145" y="11" font-size="7" fill="#fde68a" font-family="monospace">alert!</text>
+          </svg>
+        </div>
+      </article>
+
+      <!-- F2: Intelligent Baseline Reset -->
+      <article class="glass-purple rounded-2xl p-7 flex flex-col gap-5 reveal" style="transition-delay:.1s">
+        <div class="relative w-14 h-14 flex-shrink-0">
+          <div class="absolute inset-0 rounded-2xl blur-xl opacity-60"
+               style="background:linear-gradient(135deg,#7c3aed,#0891b2)" aria-hidden="true"></div>
+          <div class="relative w-14 h-14 rounded-2xl flex items-center justify-center btn-primary">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M1 4v6h6M23 20v-6h-6" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"
+                    stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Intelligent Baseline Reset</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            After an alert fires, the app automatically
+            <strong class="text-slate-200">resets the baseline</strong> to the current price —
+            continuous trend tracking without manual resets every move.
+          </p>
+        </div>
+        <!-- Decorative: baseline resets following price -->
+        <div class="mt-auto pt-4 border-t border-white/05">
+          <svg viewBox="0 0 220 60" class="w-full h-14" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="cg2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#22d3ee" stop-opacity=".18"/>
+                <stop offset="100%" stop-color="#22d3ee" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- price line (wavy, going up) -->
+            <path d="M0,50 C15,46 25,48 38,42 C48,37 52,40 60,36 C68,32 72,34 82,28 C92,22 96,25 108,20 C118,15 124,18 138,12 C148,8 154,10 168,6 C178,3 192,5 220,2"
+                  fill="none" stroke="#a855f7" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 2" opacity=".6"/>
+            <!-- baseline segments with jumps at each reset -->
+            <line x1="0" y1="50" x2="55" y2="50" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+            <line x1="55" y1="36" x2="105" y2="36" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+            <line x1="105" y1="20" x2="162" y2="20" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+            <line x1="162" y1="6" x2="220" y2="6" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+            <!-- reset jump arrows (vertical) -->
+            <line x1="55" y1="50" x2="55" y2="36" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="2 2"/>
+            <line x1="105" y1="36" x2="105" y2="20" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="2 2"/>
+            <line x1="162" y1="20" x2="162" y2="6" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="2 2"/>
+            <!-- reset dots -->
+            <circle cx="55" cy="36" r="3.5" fill="#a855f7"/>
+            <circle cx="105" cy="20" r="3.5" fill="#a855f7"/>
+            <circle cx="162" cy="6" r="3.5" fill="#a855f7"/>
+            <!-- labels -->
+            <text x="2" y="58" font-size="7" fill="#22d3ee" font-family="monospace" opacity=".8">baseline</text>
+            <text x="60" y="33" font-size="7" fill="#a855f7" font-family="monospace" opacity=".9">reset</text>
+            <text x="108" y="17" font-size="7" fill="#a855f7" font-family="monospace" opacity=".9">reset</text>
+          </svg>
+        </div>
+      </article>
+
+      <!-- F3: Smart Background Tracking -->
+      <article class="glass-purple rounded-2xl p-7 flex flex-col gap-5 reveal" style="transition-delay:.15s">
+        <div class="relative w-14 h-14 flex-shrink-0">
+          <div class="absolute inset-0 rounded-2xl blur-xl opacity-60"
+               style="background:linear-gradient(135deg,#7c3aed,#0891b2)" aria-hidden="true"></div>
+          <div class="relative w-14 h-14 rounded-2xl flex items-center justify-center btn-primary">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 2a5 5 0 0 1 5 5c0 3-1.5 5.5-3.5 6.5H7C5 12.5 3.5 10 3.5 7A5 5 0 0 1 12 2z"
+                    stroke="white" stroke-width="2"/>
+              <path d="M9 21h6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="18" cy="6" r="3" fill="#4ade80"/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Smart Background Tracking</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            CoinImpulse monitors prices while your screen is off.
+            Choose between <strong class="text-slate-200">Eco mode</strong> (battery-friendly,
+            system-scheduled) or <strong class="text-slate-200">Live mode</strong> (PRO —
+            near real-time, down to 1-minute intervals).
+          </p>
+        </div>
+        <!-- Decorative: sync timeline -->
+        <div class="mt-auto pt-4 border-t border-white/05">
+          <svg viewBox="0 0 220 60" class="w-full h-14" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="cg3" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#4ade80" stop-opacity=".6"/>
+                <stop offset="60%" stop-color="#22d3ee" stop-opacity=".8"/>
+                <stop offset="100%" stop-color="#a855f7" stop-opacity=".9"/>
+              </linearGradient>
+            </defs>
+            <!-- timeline track -->
+            <line x1="10" y1="30" x2="210" y2="30" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+            <!-- Eco pulses (wider spacing) -->
+            <g opacity=".85">
+              <circle cx="20"  cy="30" r="4" fill="#4ade80"/>
+              <circle cx="60"  cy="30" r="4" fill="#4ade80"/>
+              <circle cx="100" cy="30" r="4" fill="#4ade80"/>
+              <!-- pulse rings -->
+              <circle cx="20"  cy="30" r="8" fill="none" stroke="#4ade80" stroke-width="1" opacity=".4"/>
+              <circle cx="60"  cy="30" r="8" fill="none" stroke="#4ade80" stroke-width="1" opacity=".4"/>
+              <circle cx="100" cy="30" r="8" fill="none" stroke="#4ade80" stroke-width="1" opacity=".4"/>
+            </g>
+            <!-- separator -->
+            <line x1="118" y1="12" x2="118" y2="48" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="3 2"/>
+            <!-- Live pulses (tight spacing, PRO) -->
+            <g opacity=".9">
+              <circle cx="130" cy="30" r="4" fill="#a855f7"/>
+              <circle cx="148" cy="30" r="4" fill="#a855f7"/>
+              <circle cx="166" cy="30" r="4" fill="#a855f7"/>
+              <circle cx="184" cy="30" r="4" fill="#a855f7"/>
+              <circle cx="202" cy="30" r="4" fill="#a855f7"/>
+              <circle cx="130" cy="30" r="8" fill="none" stroke="#a855f7" stroke-width="1" opacity=".35"/>
+              <circle cx="166" cy="30" r="8" fill="none" stroke="#a855f7" stroke-width="1" opacity=".35"/>
+              <circle cx="202" cy="30" r="8" fill="none" stroke="#a855f7" stroke-width="1" opacity=".35"/>
+            </g>
+            <!-- labels -->
+            <text x="38" y="50" font-size="7.5" fill="#4ade80" font-family="monospace" text-anchor="middle">Eco</text>
+            <text x="166" y="50" font-size="7.5" fill="#a855f7" font-family="monospace" text-anchor="middle">Live (PRO)</text>
+          </svg>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- Feature grid 2 cols -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+      <!-- F4: Custom Alert Sounds -->
+      <article class="glass-purple rounded-2xl p-6 flex gap-5 items-start reveal" style="transition-delay:.2s">
+        <div class="relative w-12 h-12 flex-shrink-0">
+          <div class="absolute inset-0 rounded-xl blur-lg opacity-50"
+               style="background:linear-gradient(135deg,#7c3aed,#0891b2)" aria-hidden="true"></div>
+          <div class="relative w-12 h-12 rounded-xl flex items-center justify-center btn-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 18V5l12-2v13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="6" cy="18" r="3" stroke="white" stroke-width="2"/>
+              <circle cx="18" cy="16" r="3" stroke="white" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-white mb-1.5">Custom Alert Sounds</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Assign different sounds to different alerts —
+            know what's happening <strong class="text-slate-200">without even looking</strong> at your screen.
+          </p>
+          <div class="flex gap-2 mt-3">
+            <span class="text-xs px-2.5 py-1 rounded-full bg-purple-500/15 border border-purple-500/25 text-purple-300">Cash Register</span>
+            <span class="text-xs px-2.5 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/25 text-cyan-300">Cha-Ching</span>
+            <span class="text-xs px-2.5 py-1 rounded-full bg-slate-700/60 border border-white/10 text-slate-400">+more</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- F5: History Filter -->
+      <article class="glass-purple rounded-2xl p-6 flex gap-5 items-start reveal" style="transition-delay:.25s">
+        <div class="relative w-12 h-12 flex-shrink-0">
+          <div class="absolute inset-0 rounded-xl blur-lg opacity-50"
+               style="background:linear-gradient(135deg,#7c3aed,#0891b2)" aria-hidden="true"></div>
+          <div class="relative w-12 h-12 rounded-xl flex items-center justify-center btn-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <line x1="3" y1="6" x2="21" y2="6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <line x1="6" y1="12" x2="18" y2="12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <line x1="10" y1="18" x2="14" y2="18" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-white mb-1.5">Advanced History Filtering</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            One-tap <strong class="text-slate-200">"Alerts Only"</strong> toggle in history —
+            see only threshold crossings, not every sync tick.
+          </p>
+          <div class="flex gap-2 mt-3">
+            <span class="text-xs px-2.5 py-1 rounded-full text-white font-semibold"
+                  style="background:linear-gradient(135deg,#7c3aed,#0891b2)">Alerts Only</span>
+            <span class="text-xs px-2.5 py-1 rounded-full bg-slate-700/60 border border-white/10 text-slate-400">All Events</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================
+     PRO SECTION
+====================================================== -->
+<section id="pro" class="py-20 sm:py-28 relative" aria-labelledby="pro-heading">
+
+  <div class="absolute top-0 left-0 right-0 h-px"
+       style="background:linear-gradient(90deg, transparent, rgba(245,158,11,0.4) 50%, transparent)"
+       aria-hidden="true"></div>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="border-gradient reveal">
+      <div class="rounded-[20px] overflow-hidden"
+           style="background:linear-gradient(135deg, rgba(245,158,11,0.07) 0%, rgba(249,115,22,0.05) 40%, rgba(2,6,23,1) 100%);">
+        <div class="flex flex-col lg:flex-row items-center gap-10 p-8 sm:p-12">
+
+          <!-- Left: pro text -->
+          <div class="flex-1 text-center lg:text-left">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full pro-badge text-black text-xs font-black tracking-widest uppercase mb-6">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              CoinImpulse PRO
+            </div>
+            <h2 id="pro-heading"
+                class="text-3xl sm:text-4xl font-extrabold text-white mb-4 leading-tight">
+              Unlock the Full<br/><span class="gt-gold">Market Edge.</span>
+            </h2>
+            <p class="text-slate-400 text-base leading-relaxed mb-6 max-w-md mx-auto lg:mx-0">
+              Go beyond the basics. PRO removes all restrictions so you can
+              monitor every position, every coin, in near real-time.
+            </p>
+
+            <ul class="space-y-3 text-sm max-w-sm mx-auto lg:mx-0 mb-8">
+              <li class="flex items-start gap-3">
+                <svg class="flex-shrink-0 mt-0.5" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                  <circle cx="9" cy="9" r="9" fill="rgba(245,158,11,0.2)"/>
+                  <path d="M5 9l3 3 5-6" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="text-slate-300"><strong class="text-white">No ads</strong> — clean, distraction-free experience</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="flex-shrink-0 mt-0.5" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                  <circle cx="9" cy="9" r="9" fill="rgba(245,158,11,0.2)"/>
+                  <path d="M5 9l3 3 5-6" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="text-slate-300"><strong class="text-white">Unlimited active alerts</strong> — track every coin in your portfolio</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="flex-shrink-0 mt-0.5" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                  <circle cx="9" cy="9" r="9" fill="rgba(245,158,11,0.2)"/>
+                  <path d="M5 9l3 3 5-6" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="text-slate-300"><strong class="text-white">Full Live Mode</strong> — sync intervals as low as <strong class="text-white">1 minute</strong></span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="flex-shrink-0 mt-0.5" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                  <circle cx="9" cy="9" r="9" fill="rgba(245,158,11,0.2)"/>
+                  <path d="M5 9l3 3 5-6" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="text-slate-300">Sub-15-minute <strong class="text-white">real-time price updates</strong></span>
+              </li>
+            </ul>
+
+            <a href="https://play.google.com/store/apps/details?id=com.bk.coinimpulse"
+               target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-black font-bold text-base pro-badge hover:opacity-90 transition-opacity"
+               aria-label="Get CoinImpulse PRO on Google Play">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              Upgrade to PRO
+            </a>
+          </div>
+
+          <!-- Right: PRO screenshot -->
+          <div class="flex-shrink-0 relative">
+            <div class="absolute inset-0 rounded-2xl blur-3xl bg-amber-500/15 scale-110 pointer-events-none"
+                 aria-hidden="true"></div>
+            <div class="phone-frame relative w-52 sm:w-60"
+                 style="aspect-ratio:9/19.5; border-color:rgba(245,158,11,0.5); box-shadow: 0 0 0 1px rgba(0,0,0,0.8), 0 30px 80px rgba(0,0,0,0.7), 0 0 60px rgba(245,158,11,0.2);">
+              <img src="https://play-lh.googleusercontent.com/IslpqZbUx2Db7qqfwqDRIU7Lr32f83PEnxZ7qAI81dP9-dIIA6MsniiTzhhM3BqaOTps6WpfrlF1SwajXrGB=w528-h1145-rw"
+                   alt="CoinImpulse dashboard showing multiple BTC and ETH price alerts with targets" loading="lazy"
+                   class="w-full h-full object-cover" />
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================
+     HOW IT WORKS
+====================================================== -->
+<section class="py-20 sm:py-24 relative" aria-labelledby="how-heading">
+
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+
+    <header class="text-center mb-14 reveal">
+      <p class="text-xs font-bold tracking-[0.2em] uppercase text-cyan-400 mb-3">Setup in 60 seconds</p>
+      <h2 id="how-heading" class="text-3xl sm:text-4xl font-extrabold text-white">
+        Three Steps to <span class="gt">Market Awareness.</span>
+      </h2>
+    </header>
+
+    <ol class="relative grid grid-cols-1 sm:grid-cols-3 gap-8" aria-label="Setup steps">
+
+      <!-- connecting line (desktop) -->
+      <div class="hidden sm:block absolute top-8 left-[16.67%] right-[16.67%] h-px"
+           style="background:linear-gradient(90deg, rgba(168,85,247,0.4), rgba(34,211,238,0.4))"
+           aria-hidden="true"></div>
+
+      <li class="flex flex-col items-center sm:items-start text-center sm:text-left gap-4 reveal" style="transition-delay:.05s">
+        <div class="relative">
+          <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black text-white btn-primary z-10 relative">1</div>
+          <div class="absolute inset-0 rounded-2xl blur-xl bg-purple-600/30" aria-hidden="true"></div>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-white mb-1">Add a coin &amp; entry price</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">Pick any of 1000+ Binance-listed pairs. Enter the price point you want to measure deviation from.</p>
+        </div>
+      </li>
+
+      <li class="flex flex-col items-center sm:items-start text-center sm:text-left gap-4 reveal" style="transition-delay:.1s">
+        <div class="relative">
+          <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black text-white btn-primary z-10 relative">2</div>
+          <div class="absolute inset-0 rounded-2xl blur-xl bg-purple-600/30" aria-hidden="true"></div>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-white mb-1">Set a deviation threshold</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">Choose ±% (e.g. 5%). CoinImpulse fires the moment that threshold is crossed — up or down.</p>
+        </div>
+      </li>
+
+      <li class="flex flex-col items-center sm:items-start text-center sm:text-left gap-4 reveal" style="transition-delay:.15s">
+        <div class="relative">
+          <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black text-white btn-primary z-10 relative">3</div>
+          <div class="absolute inset-0 rounded-2xl blur-xl bg-purple-600/30" aria-hidden="true"></div>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-white mb-1">Put your phone down</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">CoinImpulse syncs in the background. Native Android notification — no app-open required.</p>
+        </div>
+      </li>
+
+    </ol>
+  </div>
+</section>
+
+<!-- ======================================================
+     FINAL CTA
+====================================================== -->
+<section class="py-24 sm:py-32 relative overflow-hidden" aria-labelledby="cta-heading">
+
+  <!-- Animated gradient backdrop -->
+  <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+    <div class="absolute inset-0"
+         style="background:radial-gradient(ellipse 80% 60% at 50% 50%, rgba(124,58,237,0.12) 0%, transparent 70%)"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full
+                border border-purple-500/10 animate-[spin_30s_linear_infinite]"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full
+                border border-cyan-500/08 animate-[spin_20s_linear_infinite_reverse]"></div>
+  </div>
+
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center relative">
+
+    <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl btn-primary mb-8 mx-auto"
+         style="box-shadow:0 0 60px rgba(124,58,237,0.5)">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <polyline points="2,18 7,11 12,14 19,5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="19" cy="5" r="2.5" fill="#fde68a"/>
+      </svg>
+    </div>
+
+    <h2 id="cta-heading"
+        class="text-4xl sm:text-6xl font-black tracking-tight mb-5 leading-tight">
+      <span class="gt">Never Miss a Move.</span><br />
+      <span class="text-white">Ever Again.</span>
+    </h2>
+
+    <p class="text-slate-400 text-xl leading-relaxed mb-10 max-w-xl mx-auto">
+      Download CoinImpulse free, set your first alert in under a minute,
+      and let the app do the watching so you don't have to.
+    </p>
+
+    <a href="https://play.google.com/store/apps/details?id=com.bk.coinimpulse"
+       target="_blank" rel="noopener noreferrer"
+       class="btn-primary inline-flex items-center gap-3 px-9 py-5 rounded-2xl text-white font-black text-xl"
+       style="box-shadow:0 0 0 0 rgba(124,58,237,0), 0 20px 60px rgba(124,58,237,0.4)"
+       aria-label="Download CoinImpulse free on Google Play Store">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M3.18 23.76a2 2 0 0 1-.68-1.54V1.78A2 2 0 0 1 3.18.24L14.37 12 3.18 23.76z"/>
+        <path d="M18.08 16.08 5.53 23.3l8.84-8.84 3.71 1.62z"/>
+        <path d="M21.1 13.6a1.83 1.83 0 0 1 0 2.8l-3.02 1.68-4.12-4.08 4.12-4.08 3.02 1.68z"/>
+        <path d="M5.53.7l12.55 7.22-3.71 1.62L5.53.7z"/>
+      </svg>
+      Get it on Google Play
+    </a>
+
+    <p class="mt-5 text-slate-600 text-sm">
+      Free to download · PRO available · Android 8.0+ · No account required
+    </p>
+
+  </div>
+</section>
+
+</main>
+
+<!-- ======================================================
+     FOOTER
+====================================================== -->
+<footer class="border-t border-white/[0.06] py-10" aria-label="Site footer">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+
+      <a href="#" class="flex items-center gap-2.5" aria-label="CoinImpulse home">
+        <svg width="28" height="28" viewBox="0 0 108 108" class="rounded-lg flex-shrink-0" aria-hidden="true">
+          <defs>
+            <radialGradient id="ibg2" cx="40" cy="38" r="78" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"  stop-color="#3D3A4D"/>
+              <stop offset="55%" stop-color="#1B1D24"/>
+              <stop offset="100%" stop-color="#101114"/>
+            </radialGradient>
+          </defs>
+          <rect width="108" height="108" fill="url(#ibg2)" rx="22"/>
+          <circle cx="54" cy="54" r="32" fill="none" stroke="#B9C4FF" stroke-width="4"/>
+          <polyline points="28,54 36,54 42,30 48,72 54,46 60,54 66,40 78,54"
+                    fill="none" stroke="#B9C4FF" stroke-width="5"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="text-sm font-bold gt tracking-tight">CoinImpulse</span>
+      </a>
+
+      <nav aria-label="Footer navigation">
+        <ul class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-500">
+          <li><a href="https://play.google.com/store/apps/details?id=com.bk.coinimpulse" target="_blank" rel="noopener noreferrer" class="hover:text-slate-300 transition-colors">Google Play</a></li>
+          <li><a href="https://sites.google.com/view/coinimpulse-privacy-policy/home" target="_blank" rel="noopener noreferrer" class="hover:text-slate-300 transition-colors">Privacy Policy</a></li>
+          <li><a href="mailto:bksoftvare@gmail.com" class="hover:text-slate-300 transition-colors">Contact</a></li>
+        </ul>
+        <!-- Social media -->
+        <div class="flex items-center justify-center gap-4 mt-4">
+          <a href="https://www.instagram.com/coinimpulseapp/" target="_blank" rel="noopener noreferrer"
+             class="w-8 h-8 rounded-lg glass flex items-center justify-center text-slate-500 hover:text-white hover:border-purple-500/40 transition-all border border-white/05"
+             aria-label="CoinImpulse on Instagram">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="2" width="20" height="20" rx="5"/>
+              <circle cx="12" cy="12" r="4"/>
+              <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+            </svg>
+          </a>
+          <a href="https://x.com/CoinImpulseApp" target="_blank" rel="noopener noreferrer"
+             class="w-8 h-8 rounded-lg glass flex items-center justify-center text-slate-500 hover:text-white hover:border-purple-500/40 transition-all border border-white/05"
+             aria-label="CoinImpulse on X (Twitter)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+          </a>
+          <a href="https://www.tiktok.com/@coinimpulse" target="_blank" rel="noopener noreferrer"
+             class="w-8 h-8 rounded-lg glass flex items-center justify-center text-slate-500 hover:text-white hover:border-purple-500/40 transition-all border border-white/05"
+             aria-label="CoinImpulse on TikTok">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.74a4.85 4.85 0 0 1-1.01-.05z"/>
+            </svg>
+          </a>
+        </div>
+      </nav>
+
+      <p class="text-slate-600 text-xs text-center">
+        &copy; <span id="yr"></span> BSoftvare. Prices via Binance.<br/>
+        Not financial advice.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  // Scroll reveal
+  const ro = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+  // Pause marquee on hover
+  document.querySelectorAll('.marquee-wrap').forEach(w => {
+    w.addEventListener('mouseenter', () => w.querySelectorAll('.marquee-track,[style*=animation]').forEach(el => el.style.animationPlayState = 'paused'));
+    w.addEventListener('mouseleave', () => w.querySelectorAll('.marquee-track,[style*=animation]').forEach(el => el.style.animationPlayState = 'running'));
+  });
+</script>
+
+</body>
+</html>
