@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.bk.coinimpulse",
+      "sha256_cert_fingerprints": [
+        "D1:DD:D6:F7:66:F5:59:62:22:BB:CD:57:F8:2B:0D:71:19:81:90:2F:03:AF:2C:5E:16:80:5C:1E:28:2E:67:D5"
+      ]
+    }
+  }
+]
